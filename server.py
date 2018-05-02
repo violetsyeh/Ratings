@@ -47,19 +47,58 @@ def show_registration():
 @app.route('/register', methods=['POST'])
 def register_form():
 
-    email = request.args.get("email")
-    password = request.args.get("password")
+    email = request.form["user-email"]
+    password = request.form["user-password"]
 
-    users = User.query.all()
+    find_email = User.query.filter(User.email == email).first()
+    # print find_email
+    # print "============"
 
-    if email in users.email:
-        redirect('/login')
+    if find_email:
+        return redirect('/login')
     else:
         user = User(email=email, password=password)
+        # print user
+        # print "============"
         db.session.add(user)
         db.session.commit()
         return redirect('/')
 
+@app.route("/show-login")
+def show_login():
+    """Shows login page"""
+
+    return render_template("login-form.html")
+
+@app.route("/login", methods=['POST'])
+def verify_login():
+    email = request.form["user-email"]
+    password = request.form["user-password"]
+    print email
+    find_user_id = User.query.filter(User.email== email).first()
+    print find_user_id
+
+    if find_user_id and find_user_id.email == email:
+        find_login = User.query.filter(User.password == password).first()
+        if find_login == password:
+            user_id = find_user_id.user_id
+            session['user_id'] = user_id
+            flash("You were successfully logged in")
+            return redirect('/')
+        if not find_user_id:
+            flash('Please enter a valid password')
+            return redirect('/show-registration')
+    else:
+        flash('Please register')
+        return redirect('/show-registration')
+
+@app.route("/logout")
+def process_logout():
+    """Log user out."""
+
+    del session['user_id']
+    flash("You were successfully logged out.")
+    return redirect("/")
 
 
 if __name__ == "__main__":
@@ -73,5 +112,7 @@ if __name__ == "__main__":
 
     # Use the DebugToolbar
     DebugToolbarExtension(app)
+
+    app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
     app.run(port=5000, host='0.0.0.0')

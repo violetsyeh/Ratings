@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
 
-  <h2>Register</h2>
-  <form action='/register' method='POST'>
+  <h2>Login</h2>
+  <form action='/login', method="POST">
     Email:<br>
     <input type="text" name="user-email"><br>
     Password: <br>
     <input type="text" name="user-password">
-    <input type="submit" name="Submit">
+    <input type="submit" name="Submit", value="Login" ><br>
+
   </form>
 {% endblock %}
