@@ -6,10 +6,10 @@
 <body>
 	Ratings 
 	
-	{% if session.get('user_id') %}
+	{% if session.get('user') %}
 	<a href="/logout">Log Out</a>
 	{% else %}
-	<a href="/show-login">Log In</a>
+	<a href="/login">Log In</a>
 	{% endif %}
 	<hr>
 	<!-- <div>{% if session.get('user_id') %}

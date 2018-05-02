@@ -5,7 +5,7 @@ from jinja2 import StrictUndefined
 from flask_debugtoolbar import DebugToolbarExtension
 
 from flask import (Flask, render_template, redirect, request, flash,
-                   session)
+                   session, jsonify)
 
 from model import User, Rating, Movie, connect_to_db, db
 
@@ -38,7 +38,7 @@ def user_list():
         # break
         return render_template("user_list.html", users=users)
 
-@app.route("/show-registration")
+@app.route("/register", methods=['GET'])
 def show_registration():
     """Shows registration form"""
 
@@ -47,14 +47,15 @@ def show_registration():
 @app.route('/register', methods=['POST'])
 def register_form():
 
-    email = request.form["user-email"]
-    password = request.form["user-password"]
+    email = request.form.get("user-email")
+    password = request.form.get("user-password")
 
     find_email = User.query.filter(User.email == email).first()
     # print find_email
     # print "============"
 
     if find_email:
+        flash("You alreday have an account, please log in.")
         return redirect('/login')
     else:
         user = User(email=email, password=password)
@@ -62,9 +63,10 @@ def register_form():
         # print "============"
         db.session.add(user)
         db.session.commit()
+        flash("You successfully made an account.")
         return redirect('/')
 
-@app.route("/show-login")
+@app.route("/login", methods=['GET'])
 def show_login():
     """Shows login page"""
 
@@ -72,33 +74,43 @@ def show_login():
 
 @app.route("/login", methods=['POST'])
 def verify_login():
-    email = request.form["user-email"]
-    password = request.form["user-password"]
+    email = request.form.get("user-email")
+    password = request.form.get("user-password")
     print email
-    find_user_id = User.query.filter(User.email== email).first()
-    print find_user_id
+    find_user = User.query.filter(User.email== email).first()
+    print find_user
 
-    if find_user_id and find_user_id.email == email:
-        find_login = User.query.filter(User.password == password).first()
-        if find_login == password:
-            user_id = find_user_id.user_id
-            session['user_id'] = user_id
+    if find_user:
+        if find_user.password == password:
+            
+            session['user'] = find_user.user_id
+            print find_user
             flash("You were successfully logged in")
-            return redirect('/')
-        if not find_user_id:
-            flash('Please enter a valid password')
-            return redirect('/show-registration')
+            return redirect("/users/" + str(find_user.user_id))
+
+        else:
+            flash('Please enter a valid email/password')
+            return redirect('/login')
     else:
-        flash('Please register')
-        return redirect('/show-registration')
+        flash('Please enter a valid email/password')
+        return redirect('/login')
 
 @app.route("/logout")
 def process_logout():
     """Log user out."""
 
-    del session['user_id']
+    del session['user']
     flash("You were successfully logged out.")
     return redirect("/")
+
+@app.route("/users/<user_id>")
+def show_page(user_id):
+    """Shows users page"""
+    user = User.query.filter(User.user_id == user_id).first()
+    # ratings = Rating.query.filter(Rating.user_id == user_id).all()
+
+    return render_template("users.html", user=user)
+
 
 
 if __name__ == "__main__":
