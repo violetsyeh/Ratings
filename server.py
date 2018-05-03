@@ -126,15 +126,18 @@ def show_movie(movie_id):
     """Shows movie page"""
     
     movie = Movie.query.filter(Movie.movie_id == movie_id).first()
-    user_id = session['user']
-    found_user = Rating.query.filter((Rating.user_id == user_id) 
-                & (Rating.movie_id == movie_id)).first()
+    if session.get('user'):
+        user_id = session['user']
+        found_user = Rating.query.filter((Rating.user_id == user_id) 
+                    & (Rating.movie_id == movie_id)).first()
+    else:
+        found_user = None
 
     return render_template("movies.html", movie=movie, found_user=found_user)
 
 @app.route("/movies/<movie_id>", methods=["POST"])
 def verify_rating(movie_id):
-    "Verify if rating from this user exists."
+    """Verify if rating from this user exists."""
     print movie_id
     user_id = session['user']
     rating = request.form.get("rating")
@@ -161,18 +164,6 @@ def verify_rating(movie_id):
         db.session.commit()
         flash("You have successfully add a rating.")
         return redirect("/users/" + str(user_id))
-    
-
-
-# @app.route("/rating/<movie_id>")
-# def rate_movie():
-
-#     rating = request.form.get("rating")
-
-#     rate = Rating(rating_id = rating)
-
-
-
 
 
 if __name__ == "__main__":

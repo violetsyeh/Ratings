@@ -11,12 +11,13 @@
 
 	{% if session.get('user') %}
 		{% if found_user %}
+		Your rated {{ found_user.score }} for this movie.<br>
 		Update your score:
 		{% else %}
 		Please rate this movie:
 		{% endif %}
-	{% endif %}
-	<form method="POST">
+	
+<form method="POST">
 	<select name="rating">
 		<option value ='1'>1</option>
 		<option value ='2'>2</option>
@@ -26,7 +27,7 @@
 	</select>
 	<input type="submit" name="Submit">
 </form>
-	
+	{% endif %}
 	<br>
 	Ratings for  {{ movie.title }}: <br>
 	{% for rating in movie.ratings %}
