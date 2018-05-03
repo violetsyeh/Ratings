@@ -8,7 +8,7 @@
 	Zipcode: {{ user.zipcode }}<br>
 	<br>
 	Rated Movies: {% for rating in user.ratings %}
-	{{ rating.movie.title }}: {{ rating.score}}<br>
+	<a href="/movies/{{ rating.movie.movie_id }}">{{ rating.movie.title }}</a>: {{ rating.score}}<br>
 	{% endfor %}
 	
 </ul>
