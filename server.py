@@ -86,7 +86,7 @@ def verify_login():
     password = request.form.get("user-password")
     print email
     find_user = User.query.filter(User.email== email).first()
-    print find_user
+    # print find_user
 
     if find_user:
         if find_user.password == password:
@@ -119,6 +119,8 @@ def show_page(user_id):
 
     return render_template("users.html", user=user)
 
+
+
 @app.route("/movies/<movie_id>")
 def show_movie(movie_id):
     """Shows movie page"""
@@ -126,6 +128,35 @@ def show_movie(movie_id):
     movie = Movie.query.filter(Movie.movie_id == movie_id).first()
 
     return render_template("movies.html", movie=movie)
+
+@app.route("/movies/<movie_id>", methods=["POST"])
+def verify_rating(movie_id):
+    "Verify if rating from this user exists."
+    print movie_id
+    user_id = session['user']
+    rating = request.form.get("rating")
+    print "the score from form is " + rating
+    found_user = Rating.query.filter((Rating.user_id == user_id) & (Rating.movie_id == movie_id)).first()
+
+    print found_user
+
+    if found_user:
+        found_user.score = rating
+        print found_user.score
+        db.session.commit()
+        print found_user
+        flash("You were successfully updated the rating.")
+        return redirect("/users/" + str(user_id))
+
+    else:
+        rating = Rating(movie_id=movie_id, user_id=user_id,score=rating)
+        # print rating
+        db.session.add(rating)
+        db.session.commit()
+        flash("You have successfully add a rating.")
+        return redirect("/users/" + str(user_id))
+    
+
 
 # @app.route("/rating/<movie_id>")
 # def rate_movie():
