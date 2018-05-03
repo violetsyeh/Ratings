@@ -8,9 +8,15 @@
 	Release Date: {{ movie.released_at }}<br>
 	IMDB: <a href="{{ movie.imdb_url }}">{{ movie.imdb_url }}</a><br>
 	<br>
+
 	{% if session.get('user') %}
-	Rate this movie: 
-<form method="POST">
+		{% if found_user %}
+		Update your score:
+		{% else %}
+		Please rate this movie:
+		{% endif %}
+	{% endif %}
+	<form method="POST">
 	<select name="rating">
 		<option value ='1'>1</option>
 		<option value ='2'>2</option>
@@ -20,8 +26,7 @@
 	</select>
 	<input type="submit" name="Submit">
 </form>
-	{% endif %}
-	<br>
+	
 	<br>
 	Ratings for  {{ movie.title }}: <br>
 	{% for rating in movie.ratings %}

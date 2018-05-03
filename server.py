@@ -126,8 +126,11 @@ def show_movie(movie_id):
     """Shows movie page"""
     
     movie = Movie.query.filter(Movie.movie_id == movie_id).first()
+    user_id = session['user']
+    found_user = Rating.query.filter((Rating.user_id == user_id) 
+                & (Rating.movie_id == movie_id)).first()
 
-    return render_template("movies.html", movie=movie)
+    return render_template("movies.html", movie=movie, found_user=found_user)
 
 @app.route("/movies/<movie_id>", methods=["POST"])
 def verify_rating(movie_id):
@@ -136,13 +139,16 @@ def verify_rating(movie_id):
     user_id = session['user']
     rating = request.form.get("rating")
     print "the score from form is " + rating
-    found_user = Rating.query.filter((Rating.user_id == user_id) & (Rating.movie_id == movie_id)).first()
+    found_user = Rating.query.filter((Rating.user_id == user_id) 
+                & (Rating.movie_id == movie_id)).first()
 
     print found_user
 
     if found_user:
         found_user.score = rating
+        score = str(found_user.score)
         print found_user.score
+        print type(found_user.score)
         db.session.commit()
         print found_user
         flash("You were successfully updated the rating.")
