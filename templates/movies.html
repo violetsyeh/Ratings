@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Movie Page</h2>
+
+<ul>
+	Title: {{ movie.title }}<br>
+	Release Date: {{ movie.released_at }}<br>
+	IMDB: <a href="{{ movie.imdb_url }}">{{ movie.imdb_url }}</a><br>
+	<br>
+	{% if session.get('user') %}
+	Rate this movie: 
+	
+	<select>
+		<option value ='1'>1</option>
+		<option value ='2'>2</option>
+		<option value ='3'>3</option>
+		<option value ='4'>4</option>
+		<option value ='5'>5</option>
+	</select>
+	<input type="submit" name="Submit">
+	{% endif %}
+	<br>
+	Ratings for  {{ movie.title }}: <br>
+	{% for rating in movie.ratings %}
+	User {{ rating.user.user_id }} rated {{ rating.score}}.<br>
+	{% endfor %}
+	
+</ul>
+
+
+{% endblock %}

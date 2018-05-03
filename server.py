@@ -38,6 +38,14 @@ def user_list():
         # break
         return render_template("user_list.html", users=users)
 
+@app.route("/movies")
+def movie_list():
+
+    movies = Movie.query.order_by(Movie.title.asc())
+    for movie in movies:
+
+        return render_template("movie-list.html", movies=movies)
+
 @app.route("/register", methods=['GET'])
 def show_registration():
     """Shows registration form"""
@@ -110,6 +118,23 @@ def show_page(user_id):
     # ratings = Rating.query.filter(Rating.user_id == user_id).all()
 
     return render_template("users.html", user=user)
+
+@app.route("/movies/<movie_id>")
+def show_movie(movie_id):
+    """Shows movie page"""
+    
+    movie = Movie.query.filter(Movie.movie_id == movie_id).first()
+
+    return render_template("movies.html", movie=movie)
+
+# @app.route("/rating/<movie_id>")
+# def rate_movie():
+
+#     rating = request.form.get("rating")
+
+#     rate = Rating(rating_id = rating)
+
+
 
 
 
